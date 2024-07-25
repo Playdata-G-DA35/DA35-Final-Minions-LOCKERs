@@ -1,2 +1,1 @@
-# DA35-Final-team3-LOCKERs
-Facial Recognition locker
+# DA35-Final-minions-LOCKERs
