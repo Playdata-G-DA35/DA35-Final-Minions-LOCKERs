@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "login",
     "phonenumber_field",
+    "django_bootstrap5",
 
 
 ]
@@ -58,7 +59,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR , 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -128,3 +129,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 PHONENUMBER_DEFAULT_FORMAT = 'NATIONAL' # Serializer Field 설정(Defulat=E164)
 PHONENUMBER_DB_FORMAT = 'NATIONAL' # Model Field 설정(Defulat=E164)
+
+#####################
+# User Model 등록
+#####################
+AUTH_USER_MODEL = 'login.User'
