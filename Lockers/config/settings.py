@@ -120,7 +120,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -134,3 +134,14 @@ PHONENUMBER_DB_FORMAT = 'NATIONAL' # Model Field 설정(Defulat=E164)
 # User Model 등록
 #####################
 AUTH_USER_MODEL = 'login.User'
+
+#####################
+# MEDIA 설정 - 파일업로드 설정
+#####################
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS =[BASE_DIR / "static_files",]
+STATIC_ROOT = BASE_DIR / 'static'

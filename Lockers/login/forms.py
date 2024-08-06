@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 
 class CustomUserCreateForm(UserCreationForm):
+    email = forms.EmailField(label="아이디(e-mail)를 입력해 주세요.")
     password1 = forms.CharField(label='비밀번호' , widget=forms.PasswordInput())
     password2 = forms.CharField(label="비밀번호 확인",
                                 widget=forms.PasswordInput(),
@@ -11,4 +12,4 @@ class CustomUserCreateForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields =['username','password1','password2','name','email','phone']
+        fields =['email','password1','password2','name','phone']

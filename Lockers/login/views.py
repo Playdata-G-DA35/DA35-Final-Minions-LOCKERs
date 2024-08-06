@@ -25,3 +25,24 @@ def create(request):
             return redirect(reverse('home'))
         else:
             return render(request, "login/create.html",{"form":form})
+
+def user_login(request):
+    if request.method == "GET":
+        return render(request,
+                      'login/login.html',
+                      {'form':AuthenticationForm()})
+    elif request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(request, username=username , password=password)
+        if user is not None :
+            login(request, user)
+            return redirect(reverse("home"))
+        else :
+            return render(
+                request,
+                'login/login.html',
+                {'form': AuthenticationForm(),
+                "errorMessage":"ID나 Password를 다시 확인하세요."}
+            )
