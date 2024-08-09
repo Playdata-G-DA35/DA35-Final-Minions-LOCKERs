@@ -10,6 +10,39 @@
 </head>
 <body>
     <div class="container mt-4">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .background-image {
+                background-image: url('/static/imgs/main_img.webp');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                width: 100vw;
+                height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+            .content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                color: blue;
+            }
+            h1 {
+                margin-bottom: 20px;
+                position: relative;
+                font-size: 30pt;
+                top: -90px; /* 이 값을 조정하여 LOCKERs의 위치를 올리세요 */
+            }
+        </style>
+        <div class="background-image"></div>
         {% block contents%}{% endblock contents%}
 </body>
 </html>

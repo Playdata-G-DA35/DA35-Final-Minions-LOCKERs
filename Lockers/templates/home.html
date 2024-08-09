@@ -1,35 +1,14 @@
 {% extends "layout.html" %}
 {% load static %}
-{%block title%}Home{%endblock title%}
-{%block contents%}
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    .background-image {
-        background-image: url('/static/imgs/main_img.webp');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
-    }
-    .content {
-        position: relative;
-        z-index: 1;
-        text-align: center;
-        color: white;
-    }
-    h1 {
-        margin-top: 20vh;
-    }
-</style>
-<div class="background-image"></div>
-<div class="content">LOCKERs</h1>
-
-{% endblock contents%}
+{% block title %}Home{% endblock title %}
+{% block contents %}
+<div class="content">
+    <h1>LOCKERs</h1>
+    <div class="mt-3">
+        <a href="{% url 'login:login' %}" class="btn btn-primary">로그인</a>
+    </div>
+    <div class="mt-3">
+        <a href="{% url 'login:create' %}" class="btn btn-primary">회원가입</a>
+    </div>
+</div>
+{% endblock contents %}
