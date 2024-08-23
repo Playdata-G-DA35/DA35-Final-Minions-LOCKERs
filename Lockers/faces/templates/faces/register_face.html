@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+
+{% block title %}예약 완료{% endblock title %}
+
+{% block contents %}
+<style>
+    .reservation-info {
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+    }
+    .btn-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 700px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        display: none;
+        z-index: 1000;
+    }
+
+    .popup video {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 500;
+    }
+</style>
+
+{% if reservation %}
+<div class="reservation-info">
+    <h3>예약 완료</h3>
+    <p>지점: {{ reservation.start_location.city }} {{ reservation.start_location.district }}</p>
+    <p>보관함 번호: {{ reservation.start_locker.locker_number }}</p>
+    <p>시작: {{ reservation.start_datetime }}</p>
+    <p>도착: {{ reservation.end_datetime }}</p>
+</div>
+<div class="btn-container">
+    <button id="registerFaceButton" class="btn btn-primary">얼굴 등록하기</button>
+    <a href="{% url 'loginhome' %}" class="btn btn-secondary">홈으로 돌아가기</a>
+</div>
+{% else %}
+<p>예약된 정보가 없습니다.</p>
+{% endif %}
+
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="registerFacePopup">
+    <h2>얼굴 등록</h2>
+    <video id="webcam" autoplay></video>
+    <div id="instructions">등록을 시작합니다...</div>
+    <button class="btn btn-secondary" id="closePopupButton">닫기</button>
+</div>
+
+<form id="csrfForm" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<script>
+    const registerFaceButton = document.getElementById('registerFaceButton');
+    const closePopupButton = document.getElementById('closePopupButton');
+    const overlay = document.getElementById('overlay');
+    const registerFacePopup = document.getElementById('registerFacePopup');
+    const webcamElement = document.getElementById('webcam');
+    const instructionsElement = document.getElementById('instructions');
+
+    let intervalId;
+
+    registerFaceButton.addEventListener('click', startRegistration);
+    closePopupButton.addEventListener('click', closePopup);
+
+    async function startRegistration() {
+        console.log("얼굴 등록 시작");
+        overlay.style.display = 'block';
+        registerFacePopup.style.display = 'block';
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            console.log("웹캠 스트림이 성공적으로 열렸습니다.");
+            webcamElement.srcObject = stream;
+
+            intervalId = setInterval(async () => {
+                console.log("서버 요청 전송");
+
+                const canvas = document.createElement('canvas');
+                canvas.width = webcamElement.videoWidth;
+                canvas.height = webcamElement.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(webcamElement, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/jpeg');
+                console.log("이미지 데이터 생성 완료");
+
+                const response = await fetch("{% url 'faces:register_face' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image: imageData })
+                });
+
+                const data = await response.json();
+                console.log("서버에서 받은 데이터:", data);
+                instructionsElement.textContent = data.message;
+
+                if (data.success) {
+                    clearInterval(intervalId);
+                    stopWebcam();
+                    instructionsElement.textContent = "얼굴 등록이 완료되었습니다.";
+                }
+            }, 2000);
+
+        } catch (error) {
+            console.error("웹캠을 열 수 없습니다.", error);
+            instructionsElement.textContent = "웹캠을 열 수 없습니다.";
+        }
+    }
+
+    function stopWebcam() {
+        const stream = webcamElement.srcObject;
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            webcamElement.srcObject = null;
+        }
+        clearInterval(intervalId);
+    }
+
+    function closePopup() {
+        stopWebcam();
+        overlay.style.display = 'none';
+        registerFacePopup.style.display = 'none';
+    }
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+</script>
+
+{% endblock contents %}

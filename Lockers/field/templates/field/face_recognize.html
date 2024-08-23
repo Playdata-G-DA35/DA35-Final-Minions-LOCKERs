@@ -1,0 +1,170 @@
+{% extends 'layout.html' %}
+
+{% block title %}얼굴 인식{% endblock title %}
+
+{% block contents %}
+<style>
+    .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 700px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        display: none;
+        z-index: 1000;
+    }
+
+    .popup video {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 500;
+    }
+
+    #instructions {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    #recognizeFaceButton {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 18px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #recognizeFaceButton:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div>
+    <h2>얼굴 인식</h2>
+    <p>아래 버튼을 눌러 얼굴 인증을 시작하세요.</p>
+    <button id="recognizeFaceButton">얼굴 인증하기</button>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="recognizeFacePopup">
+    <video id="webcam" autoplay></video>
+    <canvas id="overlayCanvas"></canvas>
+    <div id="instructions">정면을 바라보세요...</div>
+    <button class="btn btn-secondary" id="closePopupButton">닫기</button>
+</div>
+
+<form id="csrfForm" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+
+<script>
+    const recognizeFaceButton = document.getElementById('recognizeFaceButton');
+    const closePopupButton = document.getElementById('closePopupButton');
+    const overlay = document.getElementById('overlay');
+    const recognizeFacePopup = document.getElementById('recognizeFacePopup');
+    const webcamElement = document.getElementById('webcam');
+    const instructionsElement = document.getElementById('instructions');
+
+    recognizeFaceButton.addEventListener('click', startRecognition);
+    closePopupButton.addEventListener('click', closePopup);
+
+    async function startRecognition() {
+        overlay.style.display = 'block';
+        recognizeFacePopup.style.display = 'block';
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            webcamElement.srcObject = stream;
+
+            // 캡처하기 전에 비디오가 준비되었는지 확인
+            webcamElement.onloadedmetadata = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = webcamElement.videoWidth;
+                canvas.height = webcamElement.videoHeight;
+                const context = canvas.getContext('2d');
+
+                context.drawImage(webcamElement, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/jpeg');
+
+                console.log("Captured Image Data URL:", imageData);
+
+                if (imageData === 'data:,') {
+                    console.error("이미지 데이터가 캡처되지 않았습니다.");
+                    instructionsElement.textContent = "이미지 캡처 실패. 웹캠을 확인하세요.";
+                    return;
+                }
+
+                fetch("{% url 'field:recognize_face' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image: imageData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    instructionsElement.textContent = data.message;
+
+                    if (data.success) {
+                        console.log("얼굴 인증 성공:", data.accuracy);
+                    } else {
+                        console.log("얼굴 인증 실패:", data.accuracy);
+                    }
+                })
+                .catch(error => {
+                    console.error("서버와의 통신에 실패했습니다.", error);
+                    instructionsElement.textContent = "서버와의 통신 오류.";
+                });
+            };
+
+        } catch (error) {
+            console.error("웹캠을 열 수 없습니다.", error);
+            instructionsElement.textContent = "웹캠을 열 수 없습니다.";
+        }
+    }
+
+
+    function closePopup() {
+        stopWebcam();
+        overlay.style.display = 'none';
+        recognizeFacePopup.style.display = 'none';
+    }
+
+    function stopWebcam() {
+        const stream = webcamElement.srcObject;
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            webcamElement.srcObject = null;
+        }
+    }
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+</script>
+
+{% endblock contents %}

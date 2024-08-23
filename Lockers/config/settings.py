@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import json
+import os
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +28,7 @@ SECRET_KEY = "django-insecure-5b&@vv+8jy%j=r6mhak-g0m4)33t_c^m9=1-x_!*zz^#o2cl5d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 
 # Application definition
@@ -40,8 +43,14 @@ INSTALLED_APPS = [
     "login",
     "phonenumber_field",
     "django_bootstrap5",
-
-
+    "reservation_locker",
+    "common",
+    "reservation_delivery",
+    "payments",
+    "faces",
+    "field",
+    "widget_tweaks",
+    
 ]
 
 MIDDLEWARE = [
@@ -79,9 +88,17 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'locker_system',  # MySQL 데이터베이스 이름
+        'USER': 'lockers',  # MySQL 사용자 이름
+        'PASSWORD': '1111',  # MySQL 비밀번호
+        'HOST': '127.0.0.1',  # MySQL 서버 주소 (일반적으로 'localhost')
+        'PORT': '3306',  # MySQL 포트 (기본값: 3306)
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
 
@@ -133,7 +150,7 @@ PHONENUMBER_DB_FORMAT = 'NATIONAL' # Model Field 설정(Defulat=E164)
 #####################
 # User Model 등록
 #####################
-AUTH_USER_MODEL = 'login.User'
+AUTH_USER_MODEL = 'login.Users'
 
 #####################
 # MEDIA 설정 - 파일업로드 설정
@@ -141,7 +158,40 @@ AUTH_USER_MODEL = 'login.User'
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
+LOGIN_URL = '/login/login'
+LOGIN_REDIRECT_URL = '/home/'  # 로그인 후 홈화면으로 리디렉션
+LOGOUT_REDIRECT_URL = '/'  # 로그아웃 후 시작화면으로 리디렉션
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS =[BASE_DIR / "static_files",]
-STATIC_ROOT = BASE_DIR / 'static'
+# LOGIN_URL = '/login/'  # 로그인 페이지의 URL
+
+# settings.py
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]  # static 파일들이 저장된 디렉토리
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # collectstatic 명령어 실행 시 파일이 모이는 디렉토리
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB, 필요에 따라 이 값을 조정하세요.
+secrets_file = os.path.join(BASE_DIR, 'secrets.json')
+
+# secrets.json 파일 읽기
+with open(secrets_file) as f:
+    secrets = json.load(f)
+
+def get_secret(setting, secrets=secrets):
+    """ Get the secret variable or return explicit exception. """
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured(f"Set the {setting} environment variable.")
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.naver.com'
+EMAIL_HOST_USER = 'mansundl22@naver.com'
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SECRET_KEY = get_secret("SECRET_KEY")
+
+SITE_ID = 1 
