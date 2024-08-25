@@ -49,9 +49,4 @@ class Reservations(models.Model):
         db_table = 'Reservations'
 
     def save(self, *args, **kwargs):
-        # 예약 유형을 자동으로 설정
-        if self.start_locker and self.end_locker:
-            self.reservation_type = 'locker'
-        elif hasattr(self, 'reservationdelivery'):
-            self.reservation_type = 'delivery'
         super().save(*args, **kwargs)

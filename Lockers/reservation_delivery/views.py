@@ -54,13 +54,6 @@ def select_date_time(request):
         return redirect('reservation_delivery:select_delivery_locker')
     return render(request, 'reservation_delivery/select_date_time.html')
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import ReservationDelivery
-from common.models import Locations, Lockers, Reservations
-from django.utils.dateparse import parse_datetime
-from django.urls import reverse
-
 @login_required
 def select_delivery_locker(request):
     if request.method == 'POST':
@@ -94,31 +87,33 @@ def select_delivery_locker(request):
                 'error': '지정된 보관함을 찾을 수 없습니다.',
             })
 
+        if request.method == 'POST':
         # 새로운 예약 생성
-        reservation = Reservations.objects.create(
-            user=request.user,
-            start_location=start_location,
-            end_location=end_location,
-            start_locker=start_locker,
-            end_locker=end_locker,
-            start_datetime=parse_datetime(request.session['start_datetime']),
-            end_datetime=parse_datetime(request.session['end_datetime']),
-            status='reserved',
-            reservation_type='delivery'
-        )
+            reservation = Reservations.objects.create(
+                user=request.user,
+                start_location=start_location,
+                end_location=end_location,
+                start_locker=start_locker,
+                end_locker=end_locker,
+                start_datetime=parse_datetime(request.session['start_datetime']),
+                end_datetime=parse_datetime(request.session['end_datetime']),
+                status='reserved',
+                reservation_type='delivery'
+            )
+            reservation.save()
 
-        # ReservationDelivery 생성
-        ReservationDelivery.objects.create(
-            reservation=reservation,
-            start_location=start_location,
-            end_location=end_location,
-            start_locker=start_locker,
-            end_locker=end_locker,
-            delivery_fee=3000.00,  # 예시로 배송비 설정
-            user=request.user
-        )
+            # ReservationDelivery 생성
+            ReservationDelivery.objects.create(
+                reservation=reservation,
+                start_location=start_location,
+                end_location=end_location,
+                start_locker=start_locker,
+                end_locker=end_locker,
+                delivery_fee=3000.00,  # 예시로 배송비 설정
+                user=request.user
+            )
 
-        return redirect('reservation_delivery:delivery_reservation_complete')
+            return redirect('reservation_delivery:delivery_reservation_complete')
 
     else:
         start_location_id = request.session.get('start_location_id')
@@ -177,3 +172,7 @@ def delivery_reservation_complete(request):
     return render(request, 'reservation_delivery/delivery_reservation_complete.html', {
         'reservation': reservation,
     })
+
+def view_delivery_reservations(request):
+    reservations = Reservations.objects.filter(user=request.user).last()  # 가장 최근 예약 가져오기
+    return render(request, 'reservation_delivery/delivery_list.html', {'reservations': reservations})

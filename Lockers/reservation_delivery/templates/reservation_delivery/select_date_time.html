@@ -71,6 +71,12 @@
         margin-top: 20px;
         flex-direction: column;
         align-items: center;
+        width: 100%;
+        max-width: 600px;
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     }
 
     .time-selection.active {
@@ -85,19 +91,25 @@
         display: flex;
         list-style-type: none;
         padding: 0;
-        overflow-x: scroll;
+        margin: 0;
+        overflow-x: auto;
+        width: 100%;
     }
 
     .time-selection li {
-        padding: 10px;
+        padding: 10px 15px;
         cursor: pointer;
+        background-color: #e9ecef;
+        margin-right: 5px;
+        border-radius: 5px;
         white-space: nowrap;
+        text-align: center;
+        flex-shrink: 0;
     }
 
     .time-selection li.selected {
         background-color: #007bff;
         color: white;
-        border-radius: 5px;
     }
 
     .next-button {
@@ -175,12 +187,10 @@
 
             dayElement.innerText = date;
 
-            // 오늘 날짜 표시
             if (currentDate.toDateString() === today.toDateString()) {
                 dayElement.classList.add('today');
             }
 
-            // 과거 날짜 비활성화 (현재 날짜는 선택 가능)
             if (currentDate < today.setHours(0, 0, 0, 0)) {
                 dayElement.style.color = 'lightgrey';
             } else {
@@ -191,6 +201,8 @@
 
             calendarDays.appendChild(dayElement);
         }
+
+        updateCalendarStyles();
     }
 
     function selectDate(date) {
@@ -226,7 +238,17 @@
                         selectedStartTime = timeString;
                         document.getElementById('end-time-selection').classList.add('active');
                     } else if (listId === 'end-time-list') {
-                        selectedEndTime = timeString;
+                        if (selectedStartDate && selectedStartTime) {
+                            const startDateTime = new Date(`${selectedStartDate.toISOString().split('T')[0]}T${selectedStartTime}:00`);
+                            const endDateTime = new Date(`${selectedEndDate.toISOString().split('T')[0]}T${timeString}:00`);
+                            if (endDateTime - startDateTime >= 30 * 60 * 1000) {
+                                selectedEndTime = timeString;
+                            } else {
+                                alert('종료 시간은 시작 시간보다 최소 30분 이상 차이나야 합니다.');
+                            }
+                        } else {
+                            selectedEndTime = timeString;
+                        }
                     }
                     updateTimeListStyles(listId, timeString);
                 });
@@ -294,6 +316,13 @@
             const endDateTime = new Date(`${selectedEndDate.toISOString().split('T')[0]}T${selectedEndTime}:00`);
             document.getElementById('end_datetime').value = endDateTime.toISOString();
         }
+
+        if (!selectedEndDate || !selectedEndTime) {
+            alert('종료 날짜와 시간을 선택하세요.');
+            return;
+        }
+
+        document.forms[0].submit();
     }
 </script>
 {% endblock contents %}

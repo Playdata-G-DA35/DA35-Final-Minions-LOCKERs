@@ -1,0 +1,62 @@
+{% extends 'llayout.html' %}
+
+{% block title %}예약 완료{% endblock title %}
+
+{% block contents %}
+<style>
+    .reservation-info {
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .reservation-info h3 {
+        margin-bottom: 15px;
+    }
+
+    .reservation-info p {
+        margin: 10px 0;
+    }
+
+    .btn-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center; /* 가운데 정렬 */
+    }
+
+    .btn-container a {
+        width: 200px; /* 버튼 크기 고정 */
+        text-align: center;
+        padding: 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-container a:hover {
+        background-color: #0056b3;
+    }
+
+</style>
+
+<div class="reservation-info">
+    <h3>예약 완료</h3>
+    {% if reservations %}
+        <p>지점: {{ reservations.start_location.city }} {{ reservations.start_location.district }}</p>
+        <p>보관함 번호: {{ reservations.start_locker.locker_number }}</p>
+        <p>시작: {{ reservations.start_datetime }}</p>
+        <p>도착: {{ reservations.end_datetime }}</p>
+    {% else %}
+        <p>예약된 정보가 없습니다.</p>
+    {% endif %}
+</div>
+
+<div class="btn-container">
+    <a href="{% url 'loginhome' %}">홈으로 돌아가기</a>
+</div>
+
+{% endblock contents %}

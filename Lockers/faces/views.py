@@ -1,41 +1,53 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-import cv2
-import mediapipe as mp
-import numpy as np
-from PIL import Image
-from facenet_pytorch import InceptionResnetV1
+from facenet_pytorch import MTCNN, InceptionResnetV1
 import torch
-from torchvision import transforms
 import base64
 import io
-import json
+import numpy as np
+from PIL import Image
 from .models import Faces
-
-# 얼굴 메쉬 및 얼굴 인식 모델 초기화
-mp_face_mesh = mp.solutions.face_mesh
-transform = transforms.Compose([
-    transforms.Resize((160, 160)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-])
+from scipy.spatial.distance import cosine
+import json
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = InceptionResnetV1(pretrained=None, classify=False).to(device)
-state_dict = torch.load(r"C:\Users\USER\OneDrive\classes\LOCKERs\saved_models\7epoch_colab.pth", map_location=device)
-model.load_state_dict(state_dict, strict=False)
-model.eval()
+mtcnn = MTCNN(
+    image_size=160,  # 얼굴 크기 조정
+    margin=0,        # 얼굴 주변 마진
+    min_face_size=20,  # 감지할 최소 얼굴 크기
+    thresholds=[0.6, 0.7, 0.7],  # 단계별 감지 임계값 (세 개의 네트워크에 대한 값)
+    factor=0.709,    # 이미지 피라미드 크기 조정 계수
+    device=device
+)
+model = InceptionResnetV1(pretrained='vggface2', classify=False).eval().to(device)
 
-def get_embedding_from_image(image):
-    image_pil = Image.open(io.BytesIO(base64.b64decode(image.split(',')[1])))
-    image_tensor = transform(image_pil).unsqueeze(0).to(device)
-    
-    with torch.no_grad():
-        embedding = model(image_tensor)
-    
-    return embedding.cpu().numpy().flatten()
+def get_embedding_from_image(image, index=None):
+    try:
+        image_pil = Image.open(io.BytesIO(base64.b64decode(image.split(',')[1])))
+        
+        # 이미지 해상도 줄이기
+        image_pil = image_pil.resize((image_pil.width // 2, image_pil.height // 2))
+
+        if index is not None:
+            image_pil.save(f'debug_image_{index}.jpg')
+
+        img_cropped = mtcnn(image_pil)
+        if img_cropped is None:
+            raise ValueError("얼굴을 감지할 수 없습니다.")
+
+        img_cropped = img_cropped.unsqueeze(0).to(device)
+        with torch.no_grad():
+            embedding = model(img_cropped)
+        
+        return embedding.cpu().numpy().flatten()
+
+    except Exception as e:
+        print(f"이미지 처리 중 오류 발생 (이미지 {index}): {str(e)}")
+        return None
+
+
 
 @login_required
 def register_face(request):
@@ -50,17 +62,38 @@ def register_face(request):
             
             embeddings = []
             for i, image in enumerate(images):
-                embedding = get_embedding_from_image(image)
-                embeddings.append(embedding)
-                print(f"{i+1}/17 각도 이미지 임베딩 추출 완료")
+                embedding = get_embedding_from_image(image, index=i+1)
+                if embedding is not None:
+                    embeddings.append(embedding)
+                    print(f"{i+1}/17 각도 이미지 임베딩 추출 완료")
+                else:
+                    print(f"{i+1}/17 이미지에서 얼굴을 감지하지 못했습니다.")
 
-            average_embedding = np.mean(embeddings, axis=0)
-            print("평균 임베딩 값 계산 완료:", average_embedding)
+            if len(embeddings) != 17:
+                return JsonResponse({'success': False, 'message': '일부 이미지에서 얼굴 감지 실패, 다시 시도해주세요.'})
 
-            user = request.user
-            face_instance = Faces(user=user, face_data=average_embedding)
+            face_instance = Faces(
+                user=request.user,
+                face_data_1=embeddings[0],
+                face_data_2=embeddings[1],
+                face_data_3=embeddings[2],
+                face_data_4=embeddings[3],
+                face_data_5=embeddings[4],
+                face_data_6=embeddings[5],
+                face_data_7=embeddings[6],
+                face_data_8=embeddings[7],
+                face_data_9=embeddings[8],
+                face_data_10=embeddings[9],
+                face_data_11=embeddings[10],
+                face_data_12=embeddings[11],
+                face_data_13=embeddings[12],
+                face_data_14=embeddings[13],
+                face_data_15=embeddings[14],
+                face_data_16=embeddings[15],
+                face_data_17=embeddings[16],
+            )
             face_instance.save()
-            print("평균 임베딩 값이 성공적으로 DB에 저장되었습니다.")
+            print("모든 각도의 임베딩 값이 성공적으로 DB에 저장되었습니다.")
 
             return JsonResponse({'success': True, 'message': '임베딩이 성공적으로 저장되었습니다.'})
         except Exception as e:

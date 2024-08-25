@@ -1,4 +1,3 @@
-{# layer.html #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,21 +22,21 @@
             outline: none;
             background-color: transparent;
         }
+        .navbar-collapse {
+            justify-content: center; /* 네비게이션 아이템을 가운데 정렬 */
+        }
         .nav-item {
             font-size: 1.3rem;
+            margin-left: 15px;
         }
-        /* 추가된 스타일 */
-        .navbar-collapse {
-            justify-content: flex-end; /* 네비게이션 아이템을 오른쪽에 정렬 */
+        .nav-link {
+            color: #000; /* 기본 텍스트 색상 */
         }
-        .btn-custom {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: white;
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
+        .nav-link:hover {
+            color: #007bff; /* 마우스 오버 시 텍스트 색상 */
+        }
+        .navbar-nav {
+            flex-direction: row; /* 가로 정렬 */
         }
     </style>
 </head>
@@ -61,6 +60,7 @@
                 z-index: -1;
             }
         </style>
+        <!-- 항상 토글 버튼이 보이도록 설정 -->
         <div class="background-image"></div>
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
@@ -77,21 +77,24 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 </div>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarText">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <div class="collapse navbar-collapse justify-content-center" id="navbarText">
+                    <ul class="navbar-nav">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="{% url 'login:detail' %}">회원정보 조회</a>
+                                <a class="nav-link " href="{% url 'login:detail' %}">회원정보 조회</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Locker 예약관리</a>
+                                <a class="nav-link" href="{% url 'reservation_locker:view_locker_reservations' %}">Locker 예약관리</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'reservation_delivery:view_delivery_reservations' %}">택배 조회</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'login:logout' %}">로그아웃</a>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="{% url 'login:login' %}">로그인</a>
+                                <a class="nav-link " href="{% url 'login:login' %}">로그인</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'login:create' %}">회원가입</a>

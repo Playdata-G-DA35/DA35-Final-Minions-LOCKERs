@@ -7,26 +7,37 @@
     .face-registration-container {
         background-color: #fff;
         padding: 20px;
-        max-width: 700px;
+        width: 100%;
+        max-width: 1000px;
+        height: 750px;
         margin: 50px auto;
         border-radius: 10px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         text-align: center;
-        min-height: 600px; /* 컨테이너 크기 고정 */
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
+        position: relative;
     }
 
     .btn-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
         display: flex;
         justify-content: space-between;
-        margin-top: 20px;
+    }
+
+    .btn-container .btn {
+        width: auto;
+        padding: 6px 12px;
     }
 
     .video-container {
         position: relative;
-        width: 100%;
+        width: 70%;
         height: auto;
     }
 
@@ -53,10 +64,22 @@
     }
 
     .completion-message {
-        font-size: 24px;
+        font-size: 36px;
         font-weight: bold;
         color: green;
         margin-top: 20px;
+    }
+
+    .completion-buttons {
+        display: flex;
+        justify-content: space-around;
+        width: 60%;
+        margin-top: 40px;
+    }
+
+    .completion-buttons .btn {
+        padding: 10px 20px;
+        width: 45%;
     }
 </style>
 
@@ -66,19 +89,17 @@
         <a href="javascript:history.back()" class="btn btn-secondary">이전</a>
     </div>
 
-    <h2>얼굴을 등록하세요</h2>
+    <h2 id="instructions">등록 시작 버튼을 눌러주세요</h2>
 
     <div class="video-container">
         <video id="webcam" autoplay></video>
         <canvas id="overlayCanvas"></canvas>
     </div>
 
-    <div class="instructions" id="instructions">등록 시작 버튼을 눌러주세요</div>
     <div class="angle-status" id="angle-status"></div>
     <div class="progress-status" id="progress-status"></div>
-    <div class="completion-status hidden" id="completion-status">얼굴 등록 완료!</div>
+    <div class="completion-message hidden" id="completion-status">얼굴 등록을 완료하였습니다!</div>
     <button id="startRegistrationButton" class="btn btn-primary">등록 시작</button>
-    <button id="closeButton" class="btn btn-secondary hidden">닫기</button>
 </div>
 
 <form id="csrfForm" style="display:none;">
@@ -89,7 +110,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
 <script>
     const startButton = document.getElementById('startRegistrationButton');
-    const closeButton = document.getElementById('closeButton');
     const webcamElement = document.getElementById('webcam');
     const instructionsElement = document.getElementById('instructions');
     const angleStatusElement = document.getElementById('angle-status');
@@ -111,7 +131,6 @@
     };
 
     startButton.addEventListener('click', startRegistration);
-    closeButton.addEventListener('click', closeRegistration);
 
     function startRegistration() {
         startButton.style.display = 'none';
@@ -180,15 +199,45 @@
         angleStatusElement.style.display = 'none';
         progressStatusElement.style.display = 'none';
         completionStatusElement.classList.remove('hidden');
-        completionStatusElement.textContent = "얼굴 등록이 완료되었습니다!";
-        closeButton.classList.remove('hidden');  // 닫기 버튼 표시
+
+        const completionButtonsElement = document.createElement('div');
+        completionButtonsElement.className = 'completion-buttons';
+
+        const retryButton = document.createElement('button');
+        retryButton.className = 'btn btn-secondary';
+        retryButton.innerText = '재등록하기';
+        retryButton.addEventListener('click', retryRegistration);
+        completionButtonsElement.appendChild(retryButton);
+
+        const homeButton = document.createElement('button');
+        homeButton.className = 'btn btn-primary';
+        homeButton.innerText = '다음';
+        homeButton.addEventListener('click', closeRegistration);
+        completionButtonsElement.appendChild(homeButton);
+
+        completionStatusElement.after(completionButtonsElement);
         camera.stop();
+    }
+
+    function retryRegistration() {
+        capturedImages = [];
+        capturedAngles = { yaw: [], pitch: [], roll: [] };
+        currentAngleType = 'yaw';
+        startButton.style.display = 'block';
+        completionStatusElement.classList.add('hidden');
+        document.querySelector('.completion-buttons').remove();
+        instructionsElement.style.display = 'block';
+        webcamElement.style.display = 'block';
+        canvasElement.style.display = 'block';
+        progressStatusElement.textContent = '';
+        angleStatusElement.textContent = '';
+        startRegistration();  // 다시 얼굴 등록을 시작
     }
 
     function closeRegistration() {
         sendImagesToServer(capturedImages)
             .then(() => {
-                window.location.href = "{% url 'loginhome' %}";  // 홈 화면으로 이동
+                window.location.href = "{% url 'payments:payment_form' %}";  // 홈 화면으로 이동
             })
             .catch(error => {
                 console.error("Error:", error);

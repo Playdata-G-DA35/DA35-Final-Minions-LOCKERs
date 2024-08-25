@@ -33,6 +33,9 @@ def select_date_time(request):
     if request.method == 'POST':
         start_datetime = request.POST.get('start_datetime')
         end_datetime = request.POST.get('end_datetime')
+         # 로그 출력으로 값 확인
+        print("Start datetime received:", start_datetime)
+        print("End datetime received:", end_datetime)
         request.session['start_datetime'] = start_datetime
         request.session['end_datetime'] = end_datetime
         print(f"Start datetime stored in session: {start_datetime}")  # 로그 추가
@@ -116,3 +119,7 @@ def locker_reservation_complete(request):
     return render(request, 'reservation_locker/locker_reservation_complete.html', {
         'reservation': reservation,
     })
+
+def view_locker_reservations(request):
+    reservations = Reservations.objects.filter(user=request.user).last()  # 가장 최근 예약 가져오기
+    return render(request, 'reservation_locker/locker_list.html', {'reservations': reservations})

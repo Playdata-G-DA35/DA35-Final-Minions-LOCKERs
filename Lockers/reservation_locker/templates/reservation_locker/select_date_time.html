@@ -15,33 +15,20 @@
         width: 80px;
     }
 
-    .calendar-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
     .calendar {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin: 0 20px;
-    }
-
-    .calendar-label {
-        font-size: 14px;
-        margin-bottom: 5px;
+        margin-top: 20px;
     }
 
     .calendar-header {
         display: flex;
         justify-content: space-between;
         width: 100%;
-        max-width: 300px;
+        max-width: 400px;
         padding: 10px;
-        background-color: #e9ecef;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
     }
 
     .calendar-header h5 {
@@ -51,24 +38,21 @@
     .calendar-days {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 5px;
+        gap: 10px;
         width: 100%;
-        max-width: 300px;
-        margin-top: 10px;
+        max-width: 400px;
     }
 
     .calendar-days div {
-        padding: 10px;
+        padding: 15px;
         text-align: center;
         cursor: pointer;
         border-radius: 50%;
         border: 1px solid transparent;
-        transition: background-color 0.3s ease;
     }
 
     .calendar-days div.today {
         border-color: grey;
-        font-weight: bold;
     }
 
     .calendar-days div.selected {
@@ -121,7 +105,6 @@
         white-space: nowrap;
         text-align: center;
         flex-shrink: 0;
-        transition: background-color 0.3s ease;
     }
 
     .time-selection li.selected {
@@ -147,35 +130,22 @@
     <input type="hidden" name="start_datetime" id="start_datetime">
     <input type="hidden" name="end_datetime" id="end_datetime">
 
-    <div class="calendar-container">
-        <div class="calendar" id="start-calendar">
-            <div class="calendar-label">시작 날짜</div>
-            <div class="calendar-header">
-                <button type="button" onclick="changeMonth(-1, 'start')">&#9664;</button>
-                <h5 id="start-calendar-month-year"></h5>
-                <button type="button" onclick="changeMonth(1, 'start')">&#9654;</button>
-            </div>
-            <div class="calendar-days" id="start-calendar-days"></div>
+    <div class="calendar">
+        <div class="calendar-header">
+            <button type="button" onclick="changeMonth(-1)">&#9664;</button>
+            <h5 id="calendar-month-year"></h5>
+            <button type="button" onclick="changeMonth(1)">&#9654;</button>
         </div>
-
-        <div class="calendar" id="end-calendar">
-            <div class="calendar-label">도착 날짜</div>
-            <div class="calendar-header">
-                <button type="button" onclick="changeMonth(-1, 'end')">&#9664;</button>
-                <h5 id="end-calendar-month-year"></h5>
-                <button type="button" onclick="changeMonth(1, 'end')">&#9654;</button>
-            </div>
-            <div class="calendar-days" id="end-calendar-days"></div>
-        </div>
+        <div class="calendar-days" id="calendar-days"></div>
     </div>
 
     <div class="time-selection" id="start-time-selection">
-        <h5>시작 시간</h5>
+        <h5>출발 시간</h5>
         <ul id="start-time-list"></ul>
     </div>
 
     <div class="time-selection" id="end-time-selection">
-        <h5>종료 시간</h5>
+        <h5>도착 시간</h5>
         <ul id="end-time-list"></ul>
     </div>
 
@@ -190,20 +160,17 @@
     let selectedEndDate = null;
     let selectedStartTime = null;
     let selectedEndTime = null;
-    let currentMonthStart = today.getMonth();
-    let currentYearStart = today.getFullYear();
-    let currentMonthEnd = today.getMonth();
-    let currentYearEnd = today.getFullYear();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
 
     document.addEventListener('DOMContentLoaded', function() {
-        renderCalendar(currentMonthStart, currentYearStart, 'start');
-        renderCalendar(currentMonthEnd, currentYearEnd, 'end');
+        renderCalendar(currentMonth, currentYear);
     });
 
-    function renderCalendar(month, year, calendarType) {
-        const calendarDays = document.getElementById(`${calendarType}-calendar-days`);
-        const monthYear = document.getElementById(`${calendarType}-calendar-month-year`);
-        monthYear.innerText = year + '년 ' + (month + 1) + '월';
+    function renderCalendar(month, year) {
+        const calendarDays = document.getElementById('calendar-days');
+        const monthYear = document.getElementById('calendar-month-year');
+        monthYear.innerText = `${year}년 ${month + 1}월`;
 
         calendarDays.innerHTML = '';
 
@@ -224,77 +191,63 @@
                 dayElement.classList.add('today');
             }
 
-            if (calendarType === 'end' && selectedStartDate && currentDate < selectedStartDate) {
-                dayElement.style.color = 'lightgrey';
-            } else if (currentDate < today.setHours(0, 0, 0, 0)) {
+            if (currentDate < today.setHours(0, 0, 0, 0)) {
                 dayElement.style.color = 'lightgrey';
             } else {
                 dayElement.addEventListener('click', function () {
-                    selectDate(currentDate, calendarType);
+                    selectDate(currentDate);
                 });
             }
 
             calendarDays.appendChild(dayElement);
         }
 
-        updateCalendarStyles(calendarType);
+        updateCalendarStyles();
     }
 
-    function selectDate(date, calendarType) {
-        if (calendarType === 'start') {
-            selectedStartDate = selectedStartDate && selectedStartDate.getTime() === date.getTime() ? null : date;
+    function selectDate(date) {
+        if (!selectedStartDate) {
+            selectedStartDate = date;
             selectedEndDate = null;
             selectedStartTime = null;
             selectedEndTime = null;
-            document.getElementById('start-time-selection').classList.toggle('active', !!selectedStartDate);
+            document.getElementById('start-time-selection').classList.add('active');
             document.getElementById('end-time-selection').classList.remove('active');
-            if (selectedStartDate) renderTimeList('start-time-list');
-        } else if (calendarType === 'end') {
-            if (date < selectedStartDate) {
-                alert("종료 날짜는 시작 날짜 이후여야 합니다.");
-                return;
-            }
-            selectedEndDate = selectedEndDate && selectedEndDate.getTime() === date.getTime() ? null : date;
-            selectedEndTime = null;
-            document.getElementById('end-time-selection').classList.toggle('active', !!selectedEndDate);
-            if (selectedEndDate) renderTimeList('end-time-list');
+            renderTimeList('start-time-list');
+        } else if (!selectedEndDate && date >= selectedStartDate) {
+            selectedEndDate = date;
+            document.getElementById('end-time-selection').classList.add('active');
+            renderTimeList('end-time-list');
         }
 
-        console.log("Selected Start Date: ", selectedStartDate);
-        console.log("Selected End Date: ", selectedEndDate);
-
-        updateCalendarStyles('start');
-        updateCalendarStyles('end');
+        updateCalendarStyles();
     }
 
     function renderTimeList(listId) {
         const timeList = document.getElementById(listId);
-        timeList.innerHTML = '';
+        timeList.innerHTML = ''; // 초기화
 
         for (let hour = 0; hour < 24; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
-                const timeString = hour.toString().padStart(2, '0') + ':' + minute.toString().padStart(2, '0');
+                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 const li = document.createElement('li');
                 li.innerText = timeString;
 
                 li.addEventListener('click', function() {
                     if (listId === 'start-time-list') {
-                        selectedStartTime = selectedStartTime === timeString ? null : timeString;
-                        document.getElementById('end-time-selection').classList.toggle('active', !!selectedStartTime);
-                        console.log("Selected Start Time: ", selectedStartTime);
+                        selectedStartTime = timeString;
+                        document.getElementById('end-time-selection').classList.add('active');
                     } else if (listId === 'end-time-list') {
                         if (selectedStartDate && selectedStartTime) {
                             const startDateTime = new Date(`${selectedStartDate.toISOString().split('T')[0]}T${selectedStartTime}:00`);
                             const endDateTime = new Date(`${selectedEndDate.toISOString().split('T')[0]}T${timeString}:00`);
                             if (endDateTime - startDateTime >= 30 * 60 * 1000) {
-                                selectedEndTime = selectedEndTime === timeString ? null : timeString;
-                                console.log("Selected End Time: ", selectedEndTime);
+                                selectedEndTime = timeString;
                             } else {
                                 alert('종료 시간은 시작 시간보다 최소 30분 이상 차이나야 합니다.');
                             }
                         } else {
-                            selectedEndTime = selectedEndTime === timeString ? null : timeString;
-                            console.log("Selected End Time (no validation): ", selectedEndTime);
+                            selectedEndTime = timeString;
                         }
                     }
                     updateTimeListStyles(listId, timeString);
@@ -317,19 +270,20 @@
         }
     }
 
-    function updateCalendarStyles(calendarType) {
-        const calendarDays = document.getElementById(`${calendarType}-calendar-days`).children;
-        const selectedDate = calendarType === 'start' ? selectedStartDate : selectedEndDate;
+    function updateCalendarStyles() {
+        const calendarDays = document.getElementById('calendar-days').children;
 
         for (let dayElement of calendarDays) {
             const day = parseInt(dayElement.innerText);
 
             if (!isNaN(day)) {
-                const currentDate = new Date(calendarType === 'start' ? currentYearStart : currentYearEnd, calendarType === 'start' ? currentMonthStart : currentMonthEnd, day);
+                const currentDate = new Date(currentYear, currentMonth, day);
 
                 dayElement.classList.remove('selected', 'range');
 
-                if (selectedDate && currentDate.getTime() === selectedDate.getTime()) {
+                if (selectedStartDate && currentDate.getTime() === selectedStartDate.getTime()) {
+                    dayElement.classList.add('selected');
+                } else if (selectedEndDate && currentDate.getTime() === selectedEndDate.getTime()) {
                     dayElement.classList.add('selected');
                 } else if (selectedStartDate && selectedEndDate && currentDate > selectedStartDate && currentDate < selectedEndDate) {
                     dayElement.classList.add('range');
@@ -338,30 +292,18 @@
         }
     }
 
-    function changeMonth(direction, calendarType) {
-        if (calendarType === 'start') {
-            currentMonthStart += direction;
+    function changeMonth(direction) {
+        currentMonth += direction;
 
-            if (currentMonthStart < 0) {
-                currentMonthStart = 11;
-                currentYearStart--;
-            } else if (currentMonthStart > 11) {
-                currentMonthStart = 0;
-                currentYearStart++;
-            }
-        } else if (calendarType === 'end') {
-            currentMonthEnd += direction;
-
-            if (currentMonthEnd < 0) {
-                currentMonthEnd = 11;
-                currentYearEnd--;
-            } else if (currentMonthEnd > 11) {
-                currentMonthEnd = 0;
-                currentYearEnd++;
-            }
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        } else if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
         }
 
-        renderCalendar(calendarType === 'start' ? currentMonthStart : currentMonthEnd, calendarType === 'start' ? currentYearStart : currentYearEnd, calendarType);
+        renderCalendar(currentMonth, currentYear);
     }
 
     function submitForm() {
@@ -372,19 +314,13 @@
 
         if (selectedEndDate && selectedEndTime) {
             const endDateTime = new Date(`${selectedEndDate.toISOString().split('T')[0]}T${selectedEndTime}:00`);
-            if (endDateTime <= startDateTime) {
-                alert('종료 시간은 시작 시간보다 최소 30분 이상 나야 합니다.');
-                return;
-            }
-            console.log("Setting end_datetime: ", endDateTime.toISOString());
             document.getElementById('end_datetime').value = endDateTime.toISOString();
-        } else {
+        }
+
+        if (!selectedEndDate || !selectedEndTime) {
             alert('종료 날짜와 시간을 선택하세요.');
             return;
         }
-
-        console.log("Submitting form with start_datetime: ", document.getElementById('start_datetime').value);
-        console.log("Submitting form with end_datetime: ", document.getElementById('end_datetime').value);
 
         document.forms[0].submit();
     }

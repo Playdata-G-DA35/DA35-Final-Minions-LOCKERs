@@ -11,7 +11,7 @@
     {% csrf_token %}
     <style>
         body {
-            background-image: url('/static/path_to_your_background_image.jpg');
+            background-image: url('/static/imgs/main_img.webp');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -46,9 +46,9 @@
                     
                         <div class="d-grid gap-4  mx-auto ">
                             <a href="{% url 'reservation_locker:select_location' %}" class="btn btn-primary">Locker예약</a>
-                            <a href="#" class="btn btn-primary">Locker조회</a>
+                            <a href="{% url 'reservation_locker:view_locker_reservations' %}" class="btn btn-primary">Locker 조회</a>
                             <a href="{% url 'reservation_delivery:select_delivery_location' %}" class="btn btn-primary">택배예약</a>
-                            <a href="#" class="btn btn-primary">택배조회</a>
+                            <a href="{% url 'reservation_delivery:view_delivery_reservations' %}" class="btn btn-primary">택배 조회</a>
                         </div>
                     
                 </div>
