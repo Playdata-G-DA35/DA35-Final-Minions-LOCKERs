@@ -12,7 +12,7 @@ from scipy.spatial.distance import cosine
 import json
 import os
 
-image_save_dir = r"C:\Users\USER\OneDrive\classes\LOCKERs\DA35-Final-Minions-LOCKERs\Lockers\faces"
+image_save_dir = "models\fintune_best_model_2080_2.pth"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
