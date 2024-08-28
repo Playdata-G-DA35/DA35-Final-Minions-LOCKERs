@@ -35,7 +35,7 @@ model = InceptionResnetV1(pretrained='vggface2', classify=False).eval().to(devic
 weights = ResNet34_Weights.DEFAULT
 class_model = resnet34(weights=weights)
 class_model.fc = nn.Linear(class_model.fc.in_features, 18)  # 18개의 출력 노드로 설정
-class_model.load_state_dict(torch.load(r"models\res34_fair_align_multi_7_20190809.pt", map_location=device, weights_only=True))
+class_model.load_state_dict(torch.load("models/res34_fair_align_multi_7_20190809.pt", map_location=device, weights_only=True))
 class_model = class_model.to(device)
 class_model.eval()
 
