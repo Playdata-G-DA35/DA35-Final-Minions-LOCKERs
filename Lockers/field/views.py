@@ -138,7 +138,7 @@ def recognize_face(request):
                         matched_user_id = face_instance.user_id
                         
 
-            threshold = 0.5
+            threshold = 0.7
             if best_similarity > threshold:
                 matched_user = Faces.objects.get(user_id=matched_user_id)
                 print(f"Matched user_id: {matched_user_id}")
