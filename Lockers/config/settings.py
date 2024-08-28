@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['locker-system.cvygcg4cir71.ap-northeast-2.rds.amazonaws.com']
 
 
 # Application definition
@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "login",
-    "phonenumber_field",
     "django_bootstrap5",
     "reservation_locker",
     "common",
@@ -91,10 +90,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'locker_system',  # MySQL 데이터베이스 이름
+        'NAME': 'lockers',  # MySQL 데이터베이스 이름
         'USER': 'lockers',  # MySQL 사용자 이름
-        'PASSWORD': '1111',  # MySQL 비밀번호
-        'HOST': '127.0.0.1',  # MySQL 서버 주소 (일반적으로 'localhost')
+        'PASSWORD': 'niceguy132',  # MySQL 비밀번호
+        'HOST': 'locker-system.cvygcg4cir71.ap-northeast-2.rds.amazonaws.com',  # MySQL 서버 주소 (일반적으로 'localhost')
         'PORT': '3306',  # MySQL 포트 (기본값: 3306)
         'OPTIONS': {
             'charset': 'utf8mb4',

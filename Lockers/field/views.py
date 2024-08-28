@@ -9,7 +9,7 @@ import numpy as np
 from faces.models import Faces
 from scipy.spatial.distance import cosine
 import json
-import dlib
+
 from torchvision.models import resnet34, ResNet34_Weights
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -35,12 +35,12 @@ model = InceptionResnetV1(pretrained='vggface2', classify=False).eval().to(devic
 weights = ResNet34_Weights.DEFAULT
 class_model = resnet34(weights=weights)
 class_model.fc = nn.Linear(class_model.fc.in_features, 18)  # 18개의 출력 노드로 설정
-class_model.load_state_dict(torch.load(r'C:\Users\USER\OneDrive\classes\LOCKERs\FairFace\res34_fair_align_multi_7_20190809.pt', map_location=device, weights_only=True))
+class_model.load_state_dict(torch.load(r"C:\Users\USER\Desktop\final\DA35-Final-Minions-LOCKERs\models\res34_fair_align_multi_7_20190809.pt", map_location=device, weights_only=True))
 class_model = class_model.to(device)
 class_model.eval()
 
 # 얼굴 탐지기를 위한 dlib 설정
-detector = dlib.get_frontal_face_detector()
+
 
 # 이미지 전처리 설정
 transform = transforms.Compose([
