@@ -3,7 +3,7 @@ Description=uWSGI service
 After=syslog.target
 
 [Service]
-ExecStart=/home/myenv/bin/uwsgi -i /home/ubuntu/DA35-Final-Minions-LOCKERs/Lockers/.config/uwsgi/config.ini
+ExecStart=/home/myenv/bin/uwsgi -i /home/ubuntu/DA35-Final-Minions-LOCKERs/Lockers/config/uwsgi/config.ini
 
 Restart=always
 KillSignal=SIGQUIT
