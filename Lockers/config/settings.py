@@ -28,8 +28,7 @@ SECRET_KEY = "django-insecure-5b&@vv+8jy%j=r6mhak-g0m4)33t_c^m9=1-x_!*zz^#o2cl5d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['locker-system.cvygcg4cir71.ap-northeast-2.rds.amazonaws.com',
-                 '.onya.store']
+ALLOWED_HOSTS = ['ec2-54-180-232-45.ap-northeast-2.compute.amazonaws.com','.onya.store']
 
 
 # Application definition
