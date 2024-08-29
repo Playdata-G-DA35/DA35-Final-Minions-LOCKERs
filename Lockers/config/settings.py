@@ -28,7 +28,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['locker-system.cvygcg4cir71.ap-northeast-2.rds.amazonaws.com']
+ALLOWED_HOSTS = ['locker-system.cvygcg4cir71.ap-northeast-2.rds.amazonaws.com',
+                 '.onya.store']
 
 
 # Application definition
