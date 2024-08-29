@@ -1,15 +1,13 @@
 [Unit]
-Description=uWSGI service
-After=syslog.target
+Description=uWSGI instance to serve myapp
+After=network.target
 
 [Service]
-ExecStart=/home/myenv/bin/uwsgi -i /home/ubuntu/DA35-Final-Minions-LOCKERs/Lockers/config/uwsgi/config.ini
-
-Restart=always
-KillSignal=SIGQUIT
-Type=notify
-StandardError=syslog
-NotifyAccess=all
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/DA35-Final-Minions-LOCKERs/Lockers
+Environment="PATH=/home/myenv/bin"
+ExecStart=/home/myenv/bin/uwsgi --ini /home/ubuntu/DA35-Final-Minions-LOCKERs/Lockers/config/uwsgi/config.ini
 
 [Install]
 WantedBy=multi-user.target
