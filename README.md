@@ -1,7 +1,7 @@
 # DA35-Final-minions-LOCKERs
 
 ## 용량 문제로 인해 Google Drive에 업로드한 파일 리스트
->Google Drive 주소 : [https://drive.google.com/drive/u/0/folders/1CtuJuLJhHiK9v1s5MHO73_cjFknAvRWC](https://drive.google.com/drive/u/0/folders/1e4PN7-kGHvLquaXA42kUglmwaFBmDQhy)
+>Google Drive 주소 : https://drive.google.com/drive/u/0/folders/1e4PN7-kGHvLquaXA42kUglmwaFBmDQhy
 
 ```
 파일 리스트
