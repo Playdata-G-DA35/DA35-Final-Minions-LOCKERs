@@ -1,0 +1,84 @@
+<mxfile host="app.diagrams.net" modified="2024-07-18T08:25:26.480Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" etag="qyPcLWM-V1TKCAAqyxO4" version="24.7.1" type="google">
+  <diagram name="페이지-1" id="BNcNp4oJXNnFXRh-vtKI">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="시작" style="ellipse;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-426" y="-1026" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="얼굴인식" style="rounded=1;absoluteArcSize=1;arcSize=14;whiteSpace=wrap;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-441" y="-936" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="얼굴 일치 여부" style="rhombus;strokeWidth=2;whiteSpace=wrap;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-530" y="-830" width="140" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="보관함 열림" style="rounded=1;absoluteArcSize=1;arcSize=14;whiteSpace=wrap;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-530" y="-630" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="재시도" style="rounded=1;absoluteArcSize=1;arcSize=14;whiteSpace=wrap;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-370" y="-630" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="종료" style="rounded=1;absoluteArcSize=1;arcSize=14;whiteSpace=wrap;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-502" y="-338" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="물건 넣기" style="rounded=1;absoluteArcSize=1;arcSize=14;whiteSpace=wrap;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-525" y="-540" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="보관함 닫기" style="rounded=1;absoluteArcSize=1;arcSize=14;whiteSpace=wrap;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="-530" y="-440" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.51;entryY=-0.01;fontSize=13;" edge="1" parent="1" source="2" target="3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" value="얼굴 확인" style="curved=1;startArrow=none;endArrow=block;exitX=0.26;exitY=0.98;entryX=0.5;entryY=0;fontSize=13;" edge="1" parent="1" source="3" target="4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-461" y="-866" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="12" value="일치" style="curved=1;startArrow=none;endArrow=block;exitX=0.37;exitY=1;entryX=0.5;entryY=0.01;fontSize=13;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-491" y="-656" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="13" value="불일치" style="curved=1;startArrow=none;endArrow=block;exitX=0.8;exitY=1;entryX=0.19;entryY=0.01;fontSize=13;" edge="1" parent="1" source="4" target="6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-401" y="-656" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="14" value="" style="curved=1;startArrow=none;endArrow=block;exitX=0.61;exitY=0.01;entryX=0.89;entryY=0.98;fontSize=13;" edge="1" parent="1" source="6" target="3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-321" y="-656" />
+              <mxPoint x="-321" y="-866" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="16" value="" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontSize=13;" edge="1" parent="1" source="5" target="8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="17" value="" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.98;entryX=0.5;entryY=0;fontSize=13;" edge="1" parent="1" source="8" target="9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="18" value="" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.98;fontSize=13;" edge="1" parent="1" source="9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="-485" y="-340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
