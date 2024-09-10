@@ -5,8 +5,8 @@
 
 ```
 파일 리스트
-- 프로젝트3팀-미니언즈_얼굴인식모델소스코드_V1.0
-- 프로젝트3팀-미니언즈_화면설계서_V1.0.pdf
-- 프로젝트3팀-미니언즈_최종발표PPT_V1.0.pptx
-- 프로젝트3팀-미니언즈_Prototype_Code-Model_V1.0
+- Code/프로젝트3팀-미니언즈_Prototype_Code-Model_V1.0
+- Code/프로젝트3팀-미니언즈_얼굴인식모델소스코드_V1.0
+- Git_Upload_File/프로젝트3팀-미니언즈_화면설계서_V1.0.pdf
+- Git_Upload_File/프로젝트3팀-미니언즈_최종결과보고서(PPT)_V1.0.pptx
 ```
